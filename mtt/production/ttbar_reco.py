@@ -726,3 +726,48 @@ def ttbar_init(self: Producer) -> None:
     if hasattr(self, "dataset_inst") and self.dataset_inst.is_mc:
         self.uses |= {ttbar_gen}
         self.produces |= {ttbar_gen}
+
+n_jet_had_min = 1
+n_jet_lep_min = 1
+
+for n_jet_max in range(2, 10 + 1):
+    for n_jet_had_max in range(1, n_jet_max - 1 + 1):
+        for n_jet_lep_max in range(1, n_jet_max - 1 + 1):
+
+            @producer(
+                uses={
+                    ttbar,
+                },
+                produces={
+                    ttbar,
+                },
+                cls_name=(
+                    f"ttbar_x{n_jet_max}__"
+                    f"h{n_jet_had_min}_{n_jet_had_max}__"
+                    f"l{n_jet_lep_min}_{n_jet_lep_max}"
+                ),
+            )
+            def ttbar_subclass(
+                self: Producer,
+                events: ak.Array,
+                n_jet_max=n_jet_max,
+                n_jet_had_min=n_jet_had_min,
+                n_jet_had_max=n_jet_had_max,
+                n_jet_lep_min=n_jet_lep_min,
+                n_jet_lep_max=n_jet_had_max,
+                **kwargs,
+            ) -> ak.Array:
+
+                kwargs["n_jet_max"] = n_jet_max
+                kwargs["n_jet_had_range"] = n_had = (n_jet_had_min, n_jet_had_max)
+                kwargs["n_jet_lep_range"] = n_lep = (n_jet_lep_min, n_jet_lep_max)
+                kwargs["n_jet_ttbar_range"] = (
+                    n_had[0] + n_lep[0],
+                    min(n_had[1] + n_lep[1], n_jet_max),
+                )
+
+                print(kwargs)
+
+                events = self[ttbar](events, **kwargs)
+
+                return events
