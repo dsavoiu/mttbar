@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 signalnames = {"zprime_tt", "hpseudo_tt", "hscalar_tt", "rsgluon_tt", "tt"}
 already_processed_producer = set()
-had_colors = ["yellow", "orange", "red", "purple", "blue", "olive", "darkgreen", "dimgrey", "black"]
+had_colors = ["darkorange", "red", "purple", "blue", "olive", "darkgreen", "saddlebrown", "dimgrey", "black"]
 
 data_sig = {}
 data_back = {}
@@ -100,88 +100,139 @@ for i in range(1, len(sys.argv)):
 
 for data in (data_sig, data_back):
     for extrem in ("best", "worst"):
-        print(extrem)
         for n_jet_max in range(2, 10 + 1):
             if data[f"{extrem}"]["add"][f"n_jet_max_{n_jet_max}"] != 0:
                 data[f"{extrem}"]["producer_name"].append(data[f"{extrem}"]["add"][f"producer_name_{n_jet_max}"])
                 data[f"{extrem}"]["n_jet_max"].append(data[f"{extrem}"]["add"][f"n_jet_max_{n_jet_max}"])
                 data[f"{extrem}"]["eff_back"].append(data[f"{extrem}"]["add"][f"eff_back_{n_jet_max}"])
                 data[f"{extrem}"]["had_color"].append(data[f"{extrem}"]["add"][f"had_color_{n_jet_max}"])
-# print(data_sig["worst"]["add"][f"had_color_2"], data_sig["worst"]["had_color"])
+
 #--------------------------------------------------------------------------------------------------
 
-# Plot efficiency/ background rejection for best parameters.
+# Produce legend entries.
 
-for data in (data_sig, data_back):
-
-    plt.scatter(data["best"]["n_jet_max"], data["best"]["eff_back"],label=data["label"],color=data["color"], marker="o")
-
-    plt.xlabel("n_jet_max")
-    plt.ylabel("efficieny/background rejection")
-    plt.savefig(f"/nfs/dust/cms/user/schroede/mttbar/plots/efficiencies/n_jet_max_best_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+orange_dot = mpatches.Patch(color="orange", hatch="o", label="1")
+red_dot = mpatches.Patch(color="red", hatch="o", label="2")
+purple_dot = mpatches.Patch(color="purple", hatch="o", label="3")
+blue_dot = mpatches.Patch(color="blue", hatch="o", label="4")
+olive_dot = mpatches.Patch(color="olive", hatch="o", label="5")
+darkgreen_dot = mpatches.Patch(color="darkgreen", hatch="o", label="6")
+saddlebrown_dot = mpatches.Patch(color="saddlebrown", hatch="o", label="7")
+dimgrey_dot = mpatches.Patch(color="dimgrey", hatch="o", label="8")
+black_dot = mpatches.Patch(color="black", hatch="o", label="9")
 
 # Plot efficiency for all n_jet_had_max choices.
 
-fig1,ax1 = plt.subplots()
-
-scatter_grey = ax1.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c="grey", marker="_")
-scatter_max = ax1.scatter(data_sig["best"]["n_jet_max"], data_sig["best"]["eff_back"], c=data_sig["best"]["had_color"], marker="^")
-scatter_min = ax1.scatter(data_sig["worst"]["n_jet_max"], data_sig["worst"]["eff_back"], c=data_sig["worst"]["had_color"], marker="v")
+fig_all,ax_all = plt.subplots()
+scatter_all = ax_all.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker = "o")
 plt.xlabel("n_jet_max")
 plt.ylabel("efficiency")
-plt.savefig("/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_min_max_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+plt.title("Reconstruction efficiency dependence on \n considered number of total and hadronic jets")
 
-plt.figure()
-scatter = plt.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker="o")
-plt.xlabel("n_jet_max")
-plt.ylabel("efficiency")
+box_all = ax_all.get_position()
+ax_all.set_position([box_all.x0, box_all.y0, box_all.width * 0.8, box_all.height])
 
-yellow_dot = mpatches.Patch(color="yellow", hatch="o", label="1")
-orange_dot = mpatches.Patch(color="orange", hatch="o", label="2")
-red_dot = mpatches.Patch(color="red", hatch="o", label="3")
-purple_dot = mpatches.Patch(color="purple", hatch="o", label="4")
-blue_dot = mpatches.Patch(color="blue", hatch="o", label="5")
-olive_dot = mpatches.Patch(color="olive", hatch="o", label="6")
-darkgreen_dot = mpatches.Patch(color="darkgreen", hatch="o", label="7")
-dimgrey_dot = mpatches.Patch(color="dimgrey", hatch="o", label="8")
-black_dot = mpatches.Patch(color="black", hatch="o", label="9")
-plt.legend(handles=[yellow_dot,
+ax_all_zoom = fig_all.add_axes([0.45, 0.17, 0.25, 0.2])
+scatter_all_zoom = ax_all_zoom.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker = "o")
+plt.xlim(5.5, 10.5)
+plt.ylim(0.82, 0.85)
+
+ax_all.legend(handles=[
     orange_dot,
     red_dot,
     purple_dot,
     blue_dot,
     olive_dot,
     darkgreen_dot,
+    saddlebrown_dot,
     dimgrey_dot,
     black_dot,
     ],
-    title="Maximum number of hadronic jets")
+    title='Maximum number \n of hadronic jets',
+    loc='upper left', 
+    bbox_to_anchor=(1, 1),
+    )
 plt.savefig("/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_all_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
 
-plt.figure()
-scatter_best = plt.scatter(data_sig["best"]["n_jet_max"],
-    data_sig["best"]["eff_back"],
-    label=data_sig["label"],
-    color=data_sig["best"]["had_color"],
-    marker="o",
-    )
-plt.savefig("/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_best_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+# Plot efficiency for all n_jet_had_max choices, highlighting best and worst.
 
-plt.figure()
-scatter_zoom = plt.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker="o")
+fig_extrem,ax_extrem = plt.subplots()
+
+scatter_grey = ax_extrem.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c="grey", marker = "_")
+scatter_max = ax_extrem.scatter(data_sig["best"]["n_jet_max"], data_sig["best"]["eff_back"], c=data_sig["best"]["had_color"], marker = "^")
+scatter_min = ax_extrem.scatter(data_sig["worst"]["n_jet_max"], data_sig["worst"]["eff_back"], c=data_sig["worst"]["had_color"], marker = "v")
+plt.xlabel("n_jet_max")
+plt.ylabel("efficiency")
+plt.title("Best and worst reconstruction efficiency \n for considered number of total and hadronic jets")
+
+box_extrem = ax_extrem.get_position()
+ax_extrem.set_position([box_extrem.x0, box_extrem.y0, box_extrem.width * 0.8, box_extrem.height])
+
+ax_extrem_zoom = fig_extrem.add_axes([0.45, 0.17, 0.25, 0.2])
+scatter_grey_zoom = ax_extrem_zoom.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c="grey", marker = "_")
+scatter_max_zoom = ax_extrem_zoom.scatter(data_sig["best"]["n_jet_max"], data_sig["best"]["eff_back"], c=data_sig["best"]["had_color"], marker = "^")
+scatter_min_zoom = ax_extrem_zoom.scatter(data_sig["worst"]["n_jet_max"], data_sig["worst"]["eff_back"], c=data_sig["worst"]["had_color"], marker = "v")
+plt.xlim(5.5, 10.5)
 plt.ylim(0.82, 0.85)
-plt.savefig(f"/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_all_zoom_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
 
-plt.figure()
-scatter_zoom2 = plt.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker="o")
-plt.ylim(0.84, 0.845)
-plt.savefig(f"/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_all_zoom2_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+ax_extrem.legend(handles=[
+    orange_dot,
+    red_dot,
+    purple_dot,
+    blue_dot,
+    olive_dot,
+    darkgreen_dot,
+    saddlebrown_dot,
+    dimgrey_dot,
+    black_dot,
+    ],
+    title='Maximum number \n of hadronic jets',
+    loc='upper left',
+    bbox_to_anchor=(1, 1),
+    )
 
-plt.figure()
-scatter_zoom3 = plt.scatter(data_sig["all"]["n_jet_max"], data_sig["all"]["eff_back"], c=data_sig["all"]["had_color"], marker="o")
-plt.ylim(0.8425, 0.8432)
-plt.savefig(f"/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_all_zoom3_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
-    
+
+plt.savefig("/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_extrem_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+
+
+# Plot efficiency/ background rejection for best parameters.
+
+for data in (data_sig, data_back):
+
+    fig_best,ax_best = plt.subplots()
+
+    ax_best.scatter(data["best"]["n_jet_max"], data["best"]["eff_back"],label=data["label"],color=data["best"]["had_color"], marker="o")
+
+    plt.xlabel("n_jet_max")
+    plt.ylabel("efficieny/background rejection")
+    plt.title("Best reconstruction efficiency \n for considered number of total and hadronic jets")
+
+    box_best = ax_best.get_position()
+    ax_best.set_position([box_best.x0, box_best.y0, box_best.width * 0.8, box_best.height])
+
+    ax_best_zoom = fig_best.add_axes([0.35, 0.17, 0.35, 0.4])
+    scatter_best_zoom = ax_best_zoom.scatter(data["best"]["n_jet_max"], data["best"]["eff_back"],label=data["label"],color=data["color"], marker="o")
+    plt.xlim(5.5, 10.5)
+    plt.ylim(0.82, 0.85)
+
+    ax_best.legend(handles=[
+        orange_dot,
+        red_dot,
+        purple_dot,
+        blue_dot,
+        olive_dot,
+        darkgreen_dot,
+        saddlebrown_dot,
+        dimgrey_dot,
+        black_dot,
+        ],
+        title='Maximum number \n of hadronic jets',
+        loc='upper left',
+        bbox_to_anchor=(1, 1),
+        )
+
+plt.savefig(f"/nfs/dust/cms/user/schroede/mttbar/plots/efficiency_n_jet_had_best_zprime_tt_m3000_w300_madgraph_without_x10_h1_8__l1_6_7__h1_9__l1_1.pdf")
+
 
 # Plot rock curve
 
