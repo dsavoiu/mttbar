@@ -191,6 +191,12 @@ def add_variables(config: od.Config) -> None:
         x_title=r"$\chi^2$",
     )
     config.add_variable(
+        name="chi2_lt100_fine",
+        expression="TTbar.chi2",
+        binning=(100, 0, 100),
+        x_title=r"$\chi^2$",
+    )
+    config.add_variable(
         name="ttbar_mass",
         expression="TTbar.mass",
         binning=[

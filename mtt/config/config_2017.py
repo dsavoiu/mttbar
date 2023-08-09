@@ -359,6 +359,26 @@ for dataset_name in dataset_names:
         ]
     )
 
+    # mark samples containing semileptonic ttbar
+    if any(
+        dataset.name.startswith(prefix)
+        for prefix in [
+            "tt_sl",
+            "zprime_tt",
+            "hpseudo_tt",
+            "hscalar_tt",
+            "rsgluon_tt",
+        ]
+    ):
+        dataset.add_tag({
+            "has_ttbar",
+            "has_ttbar_sl",
+        })
+
+    # mark samples containing ttbar
+    if dataset.name.startswith("tt"):
+        dataset.add_tag("has_ttbar")
+
     # reduce n_files to max. 10 for testing purposes (TODO switch to full dataset)
     for k in dataset.info.keys():
         if dataset[k].n_files > 10:
