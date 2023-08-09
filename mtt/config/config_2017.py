@@ -143,8 +143,8 @@ dataset_names = [
     "st_twchannel_t_powheg",
     "st_twchannel_tbar_powheg",
     # QCD
-    # "qcd_ht50to100_madgraph",
-    # "qcd_ht100to200_madgraph",
+    "qcd_ht50to100_madgraph",
+    "qcd_ht100to200_madgraph",
     "qcd_ht200to300_madgraph",
     "qcd_ht300to500_madgraph",
     "qcd_ht500to700_madgraph",
@@ -471,6 +471,10 @@ config_2017.set_aux("dataset_groups", {
     "hpseudo_tt": ["hpseudo_tt_*"],
     "hscalar_tt": ["hscalar_tt_*"],
     "rsgluon_tt": ["rsgluon_tt_*"],
+    "backgrounds": [
+        "tt_*", "st_*", "w_lnu_*", "dy_*",
+        "qcd_*", "ww_*", "wz_*", "zz_*",
+    ],
 })
 
 # category groups for conveniently looping over certain categories
@@ -982,16 +986,15 @@ config_2017.x.categorization = DotDict({
     "chi2_max": 30,
 })
 
-# sandboxes that might be required by remote tasks
-# (used in cf.HTCondorWorkflow)
-config_2017.x.bash_sandboxes = [
-    "$CF_BASE/sandboxes/cf.sh",
-    "$CF_BASE/sandboxes/venv_columnar.sh",
-    "$CF_BASE/sandboxes/venv_ml_tf.sh",
-]
-
 # add categories
 add_categories_selection(config_2017)
 
 # add variables
 add_variables(config_2017)
+
+# limited config with only 1 file per dataset
+config_2017_limited = config_2017.copy(name=f"{config_2017.name}_limited", id="+")
+for dataset in config_2017_limited.datasets:
+    for k in dataset.info.keys():
+        if dataset[k].n_files > 1:
+            dataset[k].n_files = 1

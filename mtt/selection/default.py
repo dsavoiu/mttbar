@@ -311,7 +311,6 @@ def lepton_jet_2d_selection(
     uses={
         attach_coffea_behavior,
         "Jet.pt",
-        "GenJet_pt",
         "LHE.HT",
     },
     exposed=True,
@@ -350,14 +349,16 @@ def data_trigger_veto(
     events: ak.Array,
     **kwargs,
 ) -> tuple[ak.Array, SelectionResult]:
-    results = self[lepton_selection](events, call_force=True, **kwargs)
 
     # get trigger requirements
     trigger_config = self.config_inst.x.triggers
 
-    is_early = self[check_early](events, trigger_config=trigger_config)
+    # check if event is in early run period
+    is_early = self[check_early](events, trigger_config=trigger_config, **kwargs)
 
-    pt_regime = results.aux["pt_regime"]
+    # ensure lepton selection was run, get lepton pT regime
+    events = self[lepton_selection](events, **kwargs)
+    pt_regime = events["pt_regime"]
 
     # pt regime booleans for convenience
     is_lowpt = (pt_regime == 1)
